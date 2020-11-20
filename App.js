@@ -1,38 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
 import { StyleSheet, Text, View, TextInput, Button, FlatList, ScrollView } from 'react-native';
-
+import GoalInput from './components/GoalInput';
+import GoalItem from './components/GoalItem';
 export default function App() {
-  const[goalInput, setGoalInput]= useState('')
   const[goalList, setGoalList]= useState([])
-  
-const handleSubmit=()=>{
-  // alert("You pressed")
-  setGoalList([...goalList,   {key: Math.random().toString(), value:goalInput}])
+  const [isAddMode, setIsAddMode] = useState(false)
+const handleSubmit=(enteredGoal)=>{
+  setGoalList(currentGoals=>[...currentGoals,   {key: Math.random().toString(), value:enteredGoal}]);
+  setIsAddMode(false);
 }
-const handleInput=(enteredGoal)=>{
-  setGoalInput(enteredGoal)
+ const removeGoalHandler =(goalId)=>{
+setGoalList(currentGoals=>{
+  return currentGoals.filter((goal)=> goal.key !== goalId)
+})
 }
-console.log(goalList)
+const cancelGoalAdditionHandler=()=>{
+  setIsAddMode(false)
+}
   return (
     <View style={{padding:50}}>
-      <View style={styles.goalForm}> 
-        {/* <View style={{}}> */}
-  
-      <TextInput  placeholder="Enter goal" style={ styles.goaltxtInput} onChangeText={handleInput}/>
-     {/* </View> */}
-      {/* <View style={{ }}> */}
-      
-      <Button 
-      onPress={handleSubmit}
-      title="Add" />
-      {/* </View> */}
-      </View>
-
+     <Button title="Add new goal" onPress={()=> setIsAddMode(true)}/>
+<GoalInput visible={isAddMode} onSubmit={handleSubmit} onCancel={cancelGoalAdditionHandler}/>
     <FlatList data= {goalList} renderItem={goalItem =>(
-       <View style={styles.goalitem}>
-   <Text>{goalItem.item.value}</Text>
-   </View>
+     <GoalItem id={goalItem.item.key} mygoal={goalItem.item.value} onDelete={removeGoalHandler}/>
       )}/>
     
     </View>
@@ -46,21 +37,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  goalForm:{
-    // flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: 'center'
-    // width: '80%'
-  },
-  goalitem:{
-width: "100%",
-backgroundColor: "#c5c3c3",
-marginTop: 20,
-paddingVertical: 20,
-paddingHorizontal: 10,
-borderColor: "black",
-borderWidth: 1
-  },
-  goaltxtInput:{  borderColor: 'gray', borderWidth: 1, padding:10, width:'80%'}
+
 });
